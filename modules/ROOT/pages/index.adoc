@@ -1,65 +1,97 @@
-////
-     Licensed to the Apache Software Foundation (ASF) under one
-     or more contributor license agreements.  See the NOTICE file
-     distributed with this work for additional information
-     regarding copyright ownership.  The ASF licenses this file
-     to you under the Apache License, Version 2.0 (the
-     "License"); you may not use this file except in compliance
-     with the License.  You may obtain a copy of the License at
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-       http://www.apache.org/licenses/LICENSE-2.0
+/**
+ * Question 2: Water Tank Surface Area Calculator GUI Application
+ * Course: Computer Literacy (HCLT107-1)
+ */
+public class Question2 extends JFrame implements ActionListener {
+    private JTextField txtRadius, txtHeight;
+    private JTextArea txtResult;
+    private JButton btnCalculate, btnClear, btnExit;
 
-     Unless required by applicable law or agreed to in writing,
-     software distributed under the License is distributed on an
-     "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-     specific language governing permissions and limitations
-     under the License.
-////
-= Welcome to Apache NetBeans
-:page-layout: page_front
-:page-tags: main
-:jbake-status: published
-:keywords: Apache NetBeans
-:icons: font
-:description: Apache NetBeans
-:note: The 'hero' tags below enable the 'hero' area in the page.gsp template
-:hero.top: Version 11.1
-:hero.title: Apache NetBeans
-:hero.subtitle: Fits the Pieces Together
+    public Question2() {
+        setTitle("Question 2 - Water Tank Surface Area Calculator");
+        setSize(450, 380);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 10));
 
-// See https://fontawesome.com/icons?d=gallery for more icons (not all of those are available, though)
+        // Input Panel
+        JPanel inputPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        inputPanel.add(new JLabel("Radius (r):"));
+        txtRadius = new JTextField();
+        inputPanel.add(txtRadius);
+        inputPanel.add(new JLabel("Height (h):"));
+        txtHeight = new JTextField();
+        inputPanel.add(txtHeight);
+        add(inputPanel, BorderLayout.NORTH);
 
-[.cards]
-****
+        // Result Display Area
+        txtResult = new JTextArea();
+        txtResult.setEditable(false);
+        txtResult.setLineWrap(true);
+        txtResult.setWrapStyleWord(true);
+        JScrollPane scrollPane = new JScrollPane(txtResult);
+        add(scrollPane, BorderLayout.CENTER);
 
-// Add cards as you see fit below. Try not to repeat consecutive colors.
+        // Control Buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        btnCalculate = new JButton("Calculate");
+        btnClear = new JButton("Clear");
+        btnExit = new JButton("Exit");
 
-[.card.blue]
-.icon:edit[] Fast & Smart Editing
-Apache NetBeans is much more than a text editor. It highlights source code xref:tutorial::kb/docs/java/editor-codereference.adoc[syntactically and semantically], lets you easily xref:tutorial::kb/docs/java/editor-inspect-transform.adoc[refactor code], with a range of handy and powerful tools.
+        btnCalculate.addActionListener(this);
+        btnClear.addActionListener(this);
+        btnExit.addActionListener(this);
 
-[.card.green]
-.icon:wrench[] Java, JavaScript, PHP, HTML5, CSS, and More
-Apache NetBeans provides editors, wizards, and templates to help you create applications in xref:tutorial::kb/docs/java/index.adoc[Java], xref:tutorial::kb/docs/php/index.adoc[PHP] and many other languages.
+        buttonPanel.add(btnCalculate);
+        buttonPanel.add(btnClear);
+        buttonPanel.add(btnExit);
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
 
-[.card.magenta]
-.icon:download[] Cross Platform
-Apache NetBeans can be xref:download/index.adoc[installed] on all operating systems that support Java, i.e, Windows, Linux, Mac OSX and BSD. Write Once, Run Anywhere, applies to NetBeans too. 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == btnCalculate) {
+            calculateSurfaceArea();
+        } else if (e.getSource() == btnClear) {
+            txtRadius.setText("");
+            txtHeight.setText("");
+            txtResult.setText("");
+            txtRadius.requestFocus();
+        } else if (e.getSource() == btnExit) {
+            this.dispose();
+        }
+    }
 
-[.card.green]
-.icon:users[] Join us
-Subscribe to our xref:community/mailing-lists.adoc[mailing lists], or follow us in link:https://twitter.com/netbeans[Twitter], link:https://tinyurl.com/netbeans-slack-signup/[Slack], link:https://www.facebook.com/NetBeans[FaceBook] or link:https://www.youtube.com/user/netbeansvideos[YouTube].
+    private void calculateSurfaceArea() {
+        try {
+            double radius = Double.parseDouble(txtRadius.getText().trim());
+            double height = Double.parseDouble(txtHeight.getText().trim());
 
-[.card.magenta]
-.icon:arrow-right[] Participate
-See how you can participate by xref:participate/submit-pr.adoc[submitting pull requests], xref:participate/report-issue.adoc[filing issues], or joining the link:https://github.com/apache/netbeans/discussions[discussions].
+            if (radius <= 0 || height <= 0) {
+                JOptionPane.showMessageDialog(this, "Radius and height must be positive values.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-[.card.blue]
-.icon:book[] Learn
-We are currently reviewing the tutorials. See how you can xref:tutorial::kb/docs/contributing.adoc[help us] review the xref:tutorial::kb/docs/java/index.adoc[Java] and xref:tutorial::kb/docs/php/index.adoc[PHP] tutorials.
+            // Formula: Surface Area = 2 * Math.PI * r * (r + h)
+            double surfaceArea = 2 * Math.PI * radius * (radius + height);
 
+            txtResult.setText(String.format("Cylindrical Water Tank Surface Area Calculation:\n\n" +
+                    "Radius (r): %.2f\n" +
+                    "Height (h): %.2f\n" +
+                    "Total Surface Area = %.4f square units", radius, height, surfaceArea));
 
-****
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Please enter valid numerical values for radius and height.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new Question2().setVisible(true));
+    }
+}
